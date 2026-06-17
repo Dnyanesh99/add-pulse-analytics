@@ -1,0 +1,14 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: simulator-service
+  main: 
+    web-application-type: none
+
+simulator:
+  ingestion-url: ${INGESTION_URL:http://localhost:8080/api/v1/events/track}
+  workers: 500 # Number of concurrent virtual threads blasting the server
+  batch-delay-ms: 0 # Delay between blasts to prevent local network socket exhaustion
+

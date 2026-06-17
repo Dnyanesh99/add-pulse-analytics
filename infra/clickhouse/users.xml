@@ -1,0 +1,52 @@
+<clickhouse>
+  <users>
+    <default>
+      <password></password>
+      <networks>
+        <ip>::/0</ip>
+      </networks>
+      <profile>default</profile>
+      <quota>default</quota>
+      <access_management>1</access_management>
+    </default>
+
+    <adpulse>
+      <password_sha256_hex>06193968de1d544e0c7ca5ad0f53535684d5da3ffc0708d1a5f8737024f3163d</password_sha256_hex>
+      <networks>
+        <ip>::/0</ip>
+      </networks>
+      <profile>default</profile>
+      <quota>default</quota>
+      <databases>
+        <database>adpulse</database>
+      </databases>
+      <access_management>0</access_management>
+    </adpulse>
+  </users>
+
+  <profiles>
+    <default>
+      <max_memory_usage>1800000000</max_memory_usage>
+      <max_execution_time>60</max_execution_time>
+      <max_rows_to_read>1000000000</max_rows_to_read>
+      <use_uncompressed_cache>1</use_uncompressed_cache>
+    </default>
+    <readonly>
+      <readonly>1</readonly>
+      <max_execution_time>10</max_execution_time>
+    </readonly>
+  </profiles>
+
+  <quotas>
+    <default>
+      <interval>
+        <duration>3600</duration>
+        <queries>0</queries>
+        <errors>0</errors>
+        <result_rows>0</result_rows>
+        <read_rows>0</read_rows>
+        <execution_time>0</execution_time>
+      </interval>
+    </default>
+  </quotas>
+</clickhouse>
