@@ -11,7 +11,7 @@
     </default>
 
     <adpulse>
-      <password_sha256_hex>06193968de1d544e0c7ca5ad0f53535684d5da3ffc0708d1a5f8737024f3163d</password_sha256_hex>
+      <password env="CLICKHOUSE_PASSWORD" />
       <networks>
         <ip>::/0</ip>
       </networks>

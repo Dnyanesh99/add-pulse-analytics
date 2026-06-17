@@ -158,6 +158,7 @@ services:
       - "127.0.0.1:9000:9000"
     environment:
       CLICKHOUSE_DB:       ${CLICKHOUSE_DB}
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD}
     volumes:
       - ./infra/clickhouse/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
       - ./infra/clickhouse/users.xml:/etc/clickhouse-server/users.d/users.xml:ro
