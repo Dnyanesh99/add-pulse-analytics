@@ -9,7 +9,7 @@ describe("Alerts & Thresholds", () => {
 
   it("should open the alert creation modal from campaign detail", () => {
     // Open a campaign
-    cy.get('div[class*="Row"]').first().click();
+    cy.get('[data-cy="campaign-row"]').first().click();
     
     // Click 'New Alert'
     cy.contains("NEW ALERT").click();
@@ -20,7 +20,7 @@ describe("Alerts & Thresholds", () => {
   });
 
   it("should create a new budget alert", () => {
-    cy.get('div[class*="Row"]').first().click();
+    cy.get('[data-cy="campaign-row"]').first().click();
     cy.contains("NEW ALERT").click();
 
     cy.get('input[placeholder*="Critical Budget Warning"]').type("E2E Test Alert");
@@ -35,7 +35,7 @@ describe("Alerts & Thresholds", () => {
   });
 
   it("should edit an existing alert", () => {
-    cy.get('div[class*="Row"]').first().click();
+    cy.get('[data-cy="campaign-row"]').first().click();
     
     // Click edit icon (✎) on the first alert
     cy.get('button').contains("✎").first().click();
@@ -47,7 +47,7 @@ describe("Alerts & Thresholds", () => {
   });
 
   it("should delete an alert", () => {
-    cy.get('div[class*="Row"]').first().click();
+    cy.get('[data-cy="campaign-row"]').first().click();
     
     // Click delete icon (✕) on the alert
     cy.get('button').contains("✕").last().click();

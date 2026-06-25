@@ -8,9 +8,9 @@ describe("Campaign Management", () => {
   });
 
   it("should list campaigns in the virtualized table", () => {
-    cy.get('div[class*="TableScroll"]').within(() => {
+    cy.get('[data-cy="table-scroll"]').within(() => {
       // Check for presence of rows
-      cy.get('div[class*="Row"]').should("have.length.at.least", 1);
+      cy.get('[data-cy="campaign-row"]').should("have.length.at.least", 1);
     });
   });
 
@@ -18,10 +18,10 @@ describe("Campaign Management", () => {
     // Select 'Paused' filter
     cy.contains("Paused").click();
     
-    cy.get('div[class*="TableScroll"]').within(() => {
+    cy.get('[data-cy="table-scroll"]').within(() => {
       // All visible rows should be 'paused'
       // We check for the StatusPill content
-      cy.get('div[class*="StatusPill"]').each(($el) => {
+      cy.get('[data-cy="status-pill"]').each(($el) => {
         cy.wrap($el).should("contain", "paused");
       });
     });
@@ -34,17 +34,17 @@ describe("Campaign Management", () => {
   });
 
   it("should open campaign detail side panel", () => {
-    cy.get('div[class*="Row"]').first().click();
+    cy.get('[data-cy="campaign-row"]').first().click();
     cy.get('aside, div[class*="Panel"]').should("be.visible");
     cy.get('h2').should("be.visible"); // Campaign name in panel
     cy.contains("Performance").should("be.visible");
   });
 
   it("should toggle campaign status from the detail panel", () => {
-    cy.get('div[class*="Row"]').first().click();
+    cy.get('[data-cy="campaign-row"]').first().click();
     
     // Get initial status
-    cy.get('div[class*="Panel"]').find('span[class*="StatusPill"]').then(($pill: JQuery<HTMLElement>) => {
+    cy.get('div[class*="Panel"]').find('[data-cy="status-pill"]').then(($pill: JQuery<HTMLElement>) => {
       const isPaused = $pill.text().includes('paused');
       const actionText = isPaused ? 'RESUME' : 'PAUSE';
       const expectedStatus = isPaused ? 'active' : 'paused';
@@ -52,12 +52,12 @@ describe("Campaign Management", () => {
       cy.get('button').contains(actionText).click();
       
       // Pill should update
-      cy.get('div[class*="Panel"]').find('span[class*="StatusPill"]').should("contain", expectedStatus);
+      cy.get('div[class*="Panel"]').find('[data-cy="status-pill"]').should("contain", expectedStatus);
     });
   });
 
   it("should close the detail panel using the close button", () => {
-    cy.get('div[class*="Row"]').first().click();
+    cy.get('[data-cy="campaign-row"]').first().click();
     cy.get('div[class*="Panel"]').should("be.visible");
     
     cy.get('button[aria-label="Close"]').click();
@@ -65,7 +65,7 @@ describe("Campaign Management", () => {
   });
 
   it("should close the detail panel using the Escape key", () => {
-    cy.get('div[class*="Row"]').first().click();
+    cy.get('[data-cy="campaign-row"]').first().click();
     cy.get('body').type('{esc}');
     cy.get('div[class*="Panel"]').should("not.exist");
   });

@@ -234,7 +234,7 @@ export const CampaignTable: FC<CampaignTableProps> = ({ campaigns }) => {
 
   return (
     <Wrap>
-      <TableScroll ref={parentRef}>
+      <TableScroll ref={parentRef} data-cy="table-scroll">
         <TableContent height={rowVirtualizer.getTotalSize() + 42}>
           <Thead cols={COLS}>
             {HEADERS.map((header) => (
@@ -269,6 +269,7 @@ export const CampaignTable: FC<CampaignTableProps> = ({ campaigns }) => {
               return (
                 <Row
                   key={c.id}
+                  data-cy="campaign-row"
                   cols={COLS}
                   idx={vRow.index}
                   top={vRow.start + 42}

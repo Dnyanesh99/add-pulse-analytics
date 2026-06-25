@@ -54,7 +54,7 @@ export const AlertBanner = () => {
   if (triggered.length === 0) return null;
 
   return (
-    <BannerWrapper>
+    <BannerWrapper data-cy="alert-banner">
       {triggered.map(alert => (
         <Banner key={alert.alertId}>
           <Message>

@@ -94,7 +94,7 @@ export const TopBar = () => {
         Ad<span>Pulse</span>
       </Logo>
       <TopRight>
-        <LivePill>
+        <LivePill data-cy="live-pill">
           <LiveDot />
           {fmtNum(metrics.totalImpressions)} impressions
         </LivePill>

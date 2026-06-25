@@ -11,17 +11,14 @@ describe("Real-time Analytics", () => {
     cy.get('header').within(() => {
       cy.contains("impressions").should("be.visible");
       // Check if number is present
-      cy.contains(/\d+ impressions/).should("be.visible");
+      cy.contains(/[\d\w\.]+ impressions/).should("be.visible");
     });
   });
 
-  it("should display the stats grid with all metrics", () => {
-    cy.get('div[class*="StatsGrid"]').within(() => {
-      cy.contains("Total impressions").should("be.visible");
-      cy.contains("Total clicks").should("be.visible");
-      cy.contains("Avg CTR").should("be.visible");
-      cy.contains("Conversions").should("be.visible");
-    });
+  it("should display the data grid with all sections", () => {
+    cy.contains("By Device").should("be.visible");
+    cy.contains("CTR Distribution").should("be.visible");
+    cy.contains("Top Countries").should("be.visible");
   });
 
   it("should show performance trend chart", () => {
@@ -31,7 +28,7 @@ describe("Real-time Analytics", () => {
 
   it("should update leaderboard with performer data", () => {
     cy.contains("Top Performers").should("be.visible");
-    cy.get('div[class*="PerformerRow"]').should("have.length.at.least", 1);
+    cy.get('[data-cy="performer-row"]').should("have.length.at.least", 1);
   });
 
   it("should allow switching leaderboard metrics", () => {

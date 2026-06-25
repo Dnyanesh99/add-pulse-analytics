@@ -120,7 +120,7 @@ export const Leaderboard = () => {
             <StatePlaceholder>No data available</StatePlaceholder>
           ) : (
             topPerformers.map((campaign, idx) => (
-              <PerformerRow key={campaign.id}>
+              <PerformerRow key={campaign.id} data-cy="performer-row">
                 <CampaignInfo>
                   <CampaignName>{idx + 1}. {campaign.name}</CampaignName>
                   <StatusPill status={campaign.status} />

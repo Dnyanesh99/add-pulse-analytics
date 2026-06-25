@@ -32,13 +32,13 @@ describe("Global Settings & UI Integrity", () => {
   it("should show alert banner when notifications are pending", () => {
     // This depends on the backend sending alerts via WebSocket
     // We can at least check if the container exists
-    cy.get('div[class*="AlertBanner"]').should("exist");
+    cy.get('[data-cy="alert-banner"]').should("exist");
   });
 
   it("should be responsive on mobile viewport", () => {
     cy.viewport("iphone-x");
     cy.get('h1').should("be.visible");
     // Check if TopBar stats are hidden (as per @media query in TopBar.tsx)
-    cy.get('div[class*="LivePill"]').should("not.be.visible");
+    cy.get('[data-cy="live-pill"]').should("not.be.visible");
   });
 });

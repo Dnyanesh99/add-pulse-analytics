@@ -28,6 +28,7 @@ export const StatusPill: FC<StatusPillProps> = ({ status, children }) => {
       color={color} 
       bg={bg} 
       active={status === "active"}
+      data-cy="status-pill"
     >
       {children}
     </SharedStatusPill>
