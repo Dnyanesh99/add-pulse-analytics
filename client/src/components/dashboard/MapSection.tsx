@@ -3,6 +3,7 @@ import styled from "@emotion/styled";
 
 import Map, { Source, Layer, NavigationControl } from "react-map-gl/maplibre";
 import type { MapRef } from "react-map-gl/maplibre";
+import type { StyleSpecification } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useGetBreakdownQuery } from "../../api/apiSlice";
 import { Card, CardBody, CardHeader, CardTitle, Badge } from "@adpulse/ui";
@@ -10,7 +11,7 @@ import { Card, CardBody, CardHeader, CardTitle, Badge } from "@adpulse/ui";
 const MAP_STYLE_URL = "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json";
 
 // Robust Fallback: Using a static object to avoid any potential scope issues
-const FALLBACK_STYLE: Record<string, unknown> = {
+const FALLBACK_STYLE: StyleSpecification = {
   "version": 8,
   "sources": {},
   "layers": [
@@ -83,7 +84,7 @@ export const MapSection = () => {
   const mapRef = useRef<MapRef>(null);
   const { data: countryData = [], isFetching } = useGetBreakdownQuery("country");
   const [error, setError] = useState<string | null>(null);
-  const [mapStyle, setMapStyle] = useState<string | Record<string, unknown>>(MAP_STYLE_URL);
+  const [mapStyle, setMapStyle] = useState<string | StyleSpecification>(MAP_STYLE_URL);
 
 
   useEffect(() => {
@@ -109,7 +110,7 @@ export const MapSection = () => {
       setError("Tile server unreachable or style error. Loading fallback mode.");
       setMapStyle(FALLBACK_STYLE);
     } else {
-      setError("Critical Map Error: " + (err.message || "Unknown error"));
+      setError("Critical Map Error: " + ((err as Error).message || String(err) || "Unknown error"));
     }
   }, [mapStyle]);
 
