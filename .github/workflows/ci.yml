@@ -74,7 +74,9 @@ jobs:
           yarn install --immutable
 
       - name: Start Docker Environment
-        run: docker compose up -d --build
+        run: |
+          cp .env.example .env
+          docker compose up -d --build
 
       - name: Wait for Environment
         run: sleep 30

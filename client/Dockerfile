@@ -8,7 +8,7 @@ WORKDIR /app
 RUN corepack enable && corepack prepare yarn@4.16.0 --activate
 
 # Copy manifest files for better caching
-COPY package.json yarn.lock ./
+COPY package.json yarn.lock .yarnrc.yml ./
 COPY packages/ui/package.json ./packages/ui/
 
 # Install dependencies
