@@ -1,16 +1,17 @@
 import { useEffect, useMemo, useState } from "react";
 import styled from "@emotion/styled";
 import { keyframes, useTheme } from "@emotion/react";
-import { clearSelected } from "../store";
+
 import { useGetCampaignsQuery, useGetAlertsQuery, useDeleteAlertMutation, useToggleCampaignStatusMutation } from "../api/apiSlice";
 import { SectionLabel, IconButton, Flex, Box } from "@adpulse/ui";
 import { StatusPill } from "./StatusPill";
 import { FunnelChart } from "./charts";
 import { fmtNum, fmtCTR, genTimeSeries } from "../utils";
 import { ReactECharts } from "./charts/EChartsCore";
-import { useAppDispatch, useAppSelector } from "../store/store-hooks";
+import { useAppSelector } from "../store/store-hooks";
 import { AlertModal } from "./AlertModal";
 import type { ChartDataPoint, Alert } from "../types";
+import { useParams, useNavigate } from "react-router-dom";
 
 const slideIn = keyframes`from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}`;
 const fadeIn  = keyframes`from{opacity:0}to{opacity:1}`;
@@ -209,9 +210,10 @@ const ChartWrapper = styled.div<{ padding?: string }>`
 `;
 
 export const CampaignDetail = () => {
-  const dispatch = useAppDispatch();
   const theme = useTheme();
-  const selectedId = useAppSelector((s) => s.campaigns.selectedId);
+  const { id: selectedId } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const role = useAppSelector((s) => (s as any).auth?.role);
   
   // RTK Query Hooks
   const { data: allCampaigns = [] } = useGetCampaignsQuery();
@@ -235,10 +237,10 @@ export const CampaignDetail = () => {
   // Close on Escape
   useEffect(() => {
     if (!selectedId) return;
-    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") dispatch(clearSelected()); };
+    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") navigate("/campaigns"); };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [selectedId, dispatch]);
+  }, [selectedId, navigate]);
 
   const impressions = campaign?.impressions || 0;
   
@@ -305,21 +307,25 @@ export const CampaignDetail = () => {
 
   return (
     <>
-      <Overlay onClick={() => dispatch(clearSelected())}>
+      <Overlay onClick={() => navigate("/campaigns")}>
         <Panel onClick={(e) => e.stopPropagation()}>
         <Header>
           <Flex justify="space-between" align="flex-start" margin="0 0 12px">
             <Flex align="center" gap="10px">
               <StatusPill status={campaign.status} />
-              <StatusBtn 
-                active={isActive} 
-                onClick={() => toggleStatus({ id: campaign.id, currentStatus: campaign.status })}
-              >
-                {isActive ? "⏸ PAUSE" : "▶️ RESUME"}
-              </StatusBtn>
-              <NewAlertBtn onClick={() => setShowAlertModal(true)}>
-                🔔 NEW ALERT
-              </NewAlertBtn>
+              {role === 'ROLE_ADMIN' && (
+                <>
+                  <StatusBtn 
+                    active={isActive} 
+                    onClick={() => toggleStatus({ id: campaign.id, currentStatus: campaign.status })}
+                  >
+                    {isActive ? "⏸ PAUSE" : "▶️ RESUME"}
+                  </StatusBtn>
+                  <NewAlertBtn onClick={() => setShowAlertModal(true)}>
+                    🔔 NEW ALERT
+                  </NewAlertBtn>
+                </>
+              )}
             </Flex>
             <Flex align="center" gap="12px">
               {alertCount > 0 && (
@@ -327,7 +333,7 @@ export const CampaignDetail = () => {
                   🔔 <AlertCountText>{alertCount}</AlertCountText>
                 </AlertIndicator>
               )}
-              <IconButton onClick={() => dispatch(clearSelected())} aria-label="Close">✕</IconButton>
+              <IconButton onClick={() => navigate("/campaigns")} aria-label="Close">✕</IconButton>
             </Flex>
           </Flex>
           <Title>{campaign.name}</Title>
@@ -377,10 +383,12 @@ export const CampaignDetail = () => {
                         {alert.metric} {alert.operator.replace('_', ' ')} {alert.metric === 'spend_pct' ? (alert.threshold * 100).toFixed(0) + '%' : alert.threshold}
                       </AlertMeta>
                     </AlertInfo>
-                    <AlertActions>
-                      <ActionBtn onClick={() => handleEdit(alert)}>✎</ActionBtn>
-                      <ActionBtn color={theme.red} onClick={() => deleteAlert(alert.id)}>✕</ActionBtn>
-                    </AlertActions>
+                    {role === 'ROLE_ADMIN' && (
+                      <AlertActions>
+                        <ActionBtn onClick={() => handleEdit(alert)}>✎</ActionBtn>
+                        <ActionBtn color={theme.red} onClick={() => deleteAlert(alert.id)}>✕</ActionBtn>
+                      </AlertActions>
+                    )}
                   </AlertItem>
                 ))}
               </Box>

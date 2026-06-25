@@ -47,7 +47,7 @@ class IngestionControllerTest {
     double cost = 1.50;
 
     // Mocking behavior
-    when(validator.processEventCost(any(), anyDouble())).thenReturn(true);
+    when(validator.processEventCost(any(), anyDouble())).thenReturn(1);
     when(objectMapper.writeValueAsString(any())).thenReturn("{\"json\":\"payload\"}");
 
     // Using reflection to set private fields for the test event
@@ -62,12 +62,12 @@ class IngestionControllerTest {
 
   @Test
   void trackEvent_BudgetExhausted() {
-    when(validator.processEventCost(any(), anyDouble())).thenReturn(false);
+    when(validator.processEventCost(any(), anyDouble())).thenReturn(-2);
 
     ResponseEntity<Void> response = ingestionController.trackEvent(event);
 
     assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, response.getStatusCode());
-    verify(kafkaTemplate, never()).send(any(), any(), any());
+    verify(kafkaTemplate, times(1)).send(eq("system-events"), any(), anyString());
   }
 
   // Helper to set private fields without adding public setters to production code

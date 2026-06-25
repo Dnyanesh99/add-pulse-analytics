@@ -4,7 +4,8 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import { keyframes } from "@emotion/react";
 import styled from "@emotion/styled";
 import { useAppSelector, useAppDispatch } from "../store/store-hooks";
-import { setSort, selectCampaign } from "../store";
+import { setSort } from "../store";
+import { useNavigate } from "react-router-dom";
 import { budgetPct, fmtCTR, fmtNum } from "../utils";
 import { BudgetBar } from "./BudgetBar";
 import { StatusPill } from "./StatusPill";
@@ -228,7 +229,8 @@ export const CampaignTable: FC<CampaignTableProps> = ({ campaigns }) => {
   });
 
   const handleSort = (key: CampaignSortKey) => dispatch(setSort(key));
-  const handleSelect = (c: Campaign) => dispatch(selectCampaign(c.id));
+  const navigate = useNavigate();
+  const handleSelect = (c: Campaign) => navigate(`/campaigns/${c.id}`);
 
   return (
     <Wrap>

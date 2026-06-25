@@ -24,6 +24,7 @@ public class AlertController {
         return ResponseEntity.ok(alertRepository.findAll());
     }
 
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<Alert> createAlert(@RequestBody Alert alert) {
         Alert saved = alertRepository.save(alert);
@@ -31,6 +32,7 @@ public class AlertController {
         return ResponseEntity.ok(saved);
     }
 
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<Alert> updateAlert(@PathVariable UUID id, @RequestBody Alert alertDetails) {
         return alertRepository.findById(id)
@@ -53,6 +55,7 @@ public class AlertController {
         return ResponseEntity.ok(alertRepository.findByCampaignId(campaignId));
     }
 
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAlert(@PathVariable UUID id) {
         alertRepository.deleteById(id);

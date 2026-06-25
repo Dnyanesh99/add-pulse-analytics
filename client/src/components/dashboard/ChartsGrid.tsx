@@ -7,9 +7,9 @@ import { Leaderboard } from "./Leaderboard";
 
 const ChartsRow = styled.div`
   display: grid;
-  grid-template-columns: 1fr 260px;
+  grid-template-columns: 1fr 280px;
   gap: 14px;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 
   @media (max-width: 900px) { 
     grid-template-columns: 1fr;

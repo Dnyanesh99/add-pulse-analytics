@@ -7,6 +7,13 @@ import { darkTheme, lightTheme } from "./Theme";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { useAppSelector } from "./store/store-hooks";
 
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { lazy, Suspense } from "react";
+import { ProtectedRoute } from "./components/ProtectedRoute";
+import { Login } from "./pages/Login";
+
+const CampaignDetail = lazy(() => import("./components/CampaignDetail").then(module => ({ default: module.CampaignDetail })));
+
 function AppContent() {
   const mode = useAppSelector((state) => state.theme.mode);
   const theme = mode === "dark" ? darkTheme : lightTheme;
@@ -14,7 +21,21 @@ function AppContent() {
   return (
     <ThemeProvider theme={theme}>
       <ErrorBoundary>
-        <AdPulseDashboard />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/" element={<Navigate to="/campaigns" replace />} />
+            <Route element={<ProtectedRoute />}>
+              <Route path="/campaigns" element={<AdPulseDashboard />}>
+                <Route path=":id" element={
+                  <Suspense fallback={null}>
+                    <CampaignDetail />
+                  </Suspense>
+                } />
+              </Route>
+            </Route>
+          </Routes>
+        </BrowserRouter>
       </ErrorBoundary>
       <Toaster 
         position="top-right"

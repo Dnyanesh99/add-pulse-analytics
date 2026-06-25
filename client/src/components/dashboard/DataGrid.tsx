@@ -2,21 +2,33 @@ import { useMemo } from "react";
 import styled from "@emotion/styled";
 import { useAppDispatch, useAppSelector } from "../../store/store-hooks";
 import { setFilter } from "../../store";
-import { useGetCampaignsQuery, useGetBreakdownQuery } from "../../api/apiSlice";
-import { Card, CardHeader, CardTitle, CardBody, FilterTab, Badge, Box, MonoText } from "@adpulse/ui";
+import { useGetCampaignsQuery, useGetBreakdownQuery, useGetTimeSeriesQuery } from "../../api/apiSlice";
+import { Card, CardHeader, CardTitle, CardBody, FilterTab, Badge, MonoText } from "@adpulse/ui";
 import { CampaignTable } from "../CampaignTable";
-import { CTRBarChart, DeviceChart } from "../charts";
+import { CTRBarChart, DeviceChart, TrendChart } from "../charts";
+import { Leaderboard } from "./Leaderboard";
 import { fmtNum } from "../../utils";
 import type { CampaignFilter } from "../../types";
 
-const BottomRow = styled.div`
+const MainLayout = styled.div`
   display: grid;
   grid-template-columns: 1fr 280px;
-  gap: 14px;
-  margin-bottom: 24px;
+  gap: 24px;
   align-items: start;
 
   @media (max-width: 1050px) { grid-template-columns: 1fr; }
+`;
+
+const LeftColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+`;
+
+const RightColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 `;
 
 const FiltersRow = styled.div`
@@ -49,12 +61,6 @@ const CountryFill = styled.div<{ w: number }>`
   background: ${(p) => p.theme.accent};
   border-radius: 2px;
   transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-`;
-
-const SideColumn = styled(Box)`
-  @media (max-width: 1050px) {
-    width: 100%;
-  }
 `;
 
 const DeviceLegend = styled.div`
@@ -95,7 +101,17 @@ const CountryValue = styled(MonoText)`
   color: ${p => p.theme.textMuted};
 `;
 
-export const CampaignsSection = () => {
+const TrendCard = styled(Card)`
+  overflow: hidden;
+  min-height: 0;
+`;
+
+const ChartBody = styled(CardBody)`
+  height: 220px;
+  box-sizing: content-box;
+`;
+
+export const DataGrid = () => {
   const dispatch = useAppDispatch();
   const { filter } = useAppSelector((s) => s.campaigns);
   
@@ -103,6 +119,7 @@ export const CampaignsSection = () => {
   const { data: allCampaigns = [] } = useGetCampaignsQuery();
   const { data: devices = [] } = useGetBreakdownQuery("device");
   const { data: countries = [] } = useGetBreakdownQuery("country");
+  const { data: historical = [], isFetching } = useGetTimeSeriesQuery(7);
 
   const filteredCampaigns = useMemo(() => {
     if (filter === "all") return allCampaigns;
@@ -113,27 +130,49 @@ export const CampaignsSection = () => {
     return countries.length > 0 ? Math.max(...countries.map((d) => d.impressions)) : 1;
   }, [countries]);
 
-  return (
-    <BottomRow>
-      <Card>
-        <CardHeader>
-          <CardTitle>All Campaigns</CardTitle>
-          <FiltersRow>
-            {["all", "active", "paused", "ended"].map((f) => (
-              <FilterTab
-                key={f}
-                active={filter === f}
-                onClick={() => dispatch(setFilter(f as CampaignFilter))}
-              >
-                {f.charAt(0).toUpperCase() + f.slice(1)}
-              </FilterTab>
-            ))}
-          </FiltersRow>
-        </CardHeader>
-        <CampaignTable campaigns={filteredCampaigns} />
-      </Card>
+  const impressionSeries = useMemo(() => 
+    historical.map(d => ({ date: d.day, value: d.impressions })), 
+  [historical]);
 
-      <SideColumn gap="14px">
+  const clickSeries = useMemo(() => 
+    historical.map(d => ({ date: d.day, value: d.clicks })), 
+  [historical]);
+
+  return (
+    <MainLayout>
+      {/* Left Column: Primary Data Tables & Large Charts */}
+      <LeftColumn>
+        <TrendCard>
+          <CardHeader>
+            <CardTitle>Performance Trend {historical.length > 0 ? `(${historical.length}d)` : ""}</CardTitle>
+            <Badge>{isFetching ? "Loading..." : "Live"}</Badge>
+          </CardHeader>
+          <ChartBody padding="10px 12px 12px">
+            <TrendChart impressionData={impressionSeries} clickData={clickSeries} />
+          </ChartBody>
+        </TrendCard>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>All Campaigns</CardTitle>
+            <FiltersRow>
+              {["all", "active", "paused", "ended"].map((f) => (
+                <FilterTab
+                  key={f}
+                  active={filter === f}
+                  onClick={() => dispatch(setFilter(f as CampaignFilter))}
+                >
+                  {f.charAt(0).toUpperCase() + f.slice(1)}
+                </FilterTab>
+              ))}
+            </FiltersRow>
+          </CardHeader>
+          <CampaignTable campaigns={filteredCampaigns} />
+        </Card>
+      </LeftColumn>
+
+      {/* Right Column: Supplementary Data & Leaderboards */}
+      <RightColumn>
         <Card>
           <CardHeader>
             <CardTitle>By Device</CardTitle>
@@ -181,8 +220,9 @@ export const CampaignsSection = () => {
             ))}
           </CardBody>
         </Card>
-      </SideColumn>
-    </BottomRow>
+
+        <Leaderboard />
+      </RightColumn>
+    </MainLayout>
   );
 };
-

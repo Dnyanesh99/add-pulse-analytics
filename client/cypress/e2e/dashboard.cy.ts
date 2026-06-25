@@ -1,7 +1,10 @@
 describe("AdPulse Dashboard", () => {
   beforeEach(() => {
-    // We assume the app is running on localhost:3000
-    cy.visit("/");
+    cy.visit("/login");
+    cy.get('input[type="text"]').type("admin");
+    cy.get('input[type="password"]').type("admin123");
+    cy.get('button[type="submit"]').click();
+    cy.url().should("include", "/campaigns");
   });
 
   it("should display the main dashboard heading", () => {

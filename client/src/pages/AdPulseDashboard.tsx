@@ -1,4 +1,4 @@
-import { useMemo, lazy, Suspense } from "react";
+import { useMemo } from "react";
 import { Global } from "@emotion/react";
 import styled from "@emotion/styled";
 import { 
@@ -16,11 +16,8 @@ import { TopBar } from "../components/dashboard/TopBar";
 import { AlertBanner } from "../components/AlertBanner";
 import { StatsGrid } from "../components/dashboard/StatsGrid";
 import { MapSection } from "../components/dashboard/MapSection";
-import { CampaignsSection } from "../components/dashboard/CampaignsSection";
-import { ChartsGrid } from "../components/dashboard/ChartsGrid";
-
-// Lazy Loaded Components
-const CampaignDetail = lazy(() => import("../components/CampaignDetail").then(module => ({ default: module.CampaignDetail })));
+import { DataGrid } from "../components/dashboard/DataGrid";
+import { Outlet } from "react-router-dom";
 
 // ── Layout ────────────────────────────────────────────────────────
 const Shell = styled.div`
@@ -100,13 +97,10 @@ export function AdPulseDashboard() {
 
           <StatsGrid />
           <MapSection />
-          <CampaignsSection />
-          <ChartsGrid />
+          <DataGrid />
         </Content>
 
-        <Suspense fallback={null}>
-          <CampaignDetail />
-        </Suspense>
+        <Outlet />
       </Shell>
     </>
   );

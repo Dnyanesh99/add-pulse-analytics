@@ -8,9 +8,11 @@ Thumbs.db
 *.lnk
 
 # Editor/IDE
-.vscode/*
-!.vscode/settings.json
-!.vscode/extensions.json
+.vscode/
+client/.vscode/
+settings.yaml
+extensions.yaml
+*.png
 .idea/
 *.iml
 *.suo

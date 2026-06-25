@@ -1,13 +1,13 @@
 import { useMemo, useState, useEffect, useCallback, useRef } from "react";
 import styled from "@emotion/styled";
-import * as maplibregl from "maplibre-gl";
+
 import Map, { Source, Layer, NavigationControl } from "react-map-gl/maplibre";
 import type { MapRef } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useGetBreakdownQuery } from "../../api/apiSlice";
 import { Card, CardBody, CardHeader, CardTitle, Badge } from "@adpulse/ui";
 
-const MAP_STYLE_URL = "https://tiles.openfreemap.org/styles/dark";
+const MAP_STYLE_URL = "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json";
 
 // Robust Fallback: Using a static object to avoid any potential scope issues
 const FALLBACK_STYLE: any = {
@@ -23,16 +23,16 @@ const FALLBACK_STYLE: any = {
 };
 
 const COUNTRY_COORDS: Record<string, [number, number]> = {
-  "USA": [-95.7129, 37.0902],
-  "India": [78.9629, 20.5937],
-  "Germany": [10.4515, 51.1657],
-  "Brazil": [-51.9253, -14.2350],
-  "UK": [-3.4360, 55.3781],
-  "France": [2.2137, 46.2276],
-  "Japan": [138.2529, 36.2048],
-  "Australia": [133.7751, -25.2744],
-  "Canada": [-106.3468, 56.1304],
-  "China": [104.1954, 35.8617],
+  "US": [-95.7129, 37.0902],
+  "IN": [78.9629, 20.5937],
+  "DE": [10.4515, 51.1657],
+  "BR": [-51.9253, -14.2350],
+  "GB": [-3.4360, 55.3781],
+  "FR": [2.2137, 46.2276],
+  "JP": [138.2529, 36.2048],
+  "AU": [133.7751, -25.2744],
+  "CA": [-106.3468, 56.1304],
+  "CN": [104.1954, 35.8617],
 };
 
 const MapCard = styled(Card)`
@@ -84,17 +84,10 @@ export const MapSection = () => {
   const { data: countryData = [], isFetching } = useGetBreakdownQuery("country");
   const [error, setError] = useState<string | null>(null);
   const [mapStyle, setMapStyle] = useState<any>(MAP_STYLE_URL);
-  const [isSupported, setIsSupported] = useState(true);
+
 
   useEffect(() => {
-    try {
-      if (!(maplibregl as any).supported()) {
-        setIsSupported(false);
-        setError("WebGL not supported by hardware/browser.");
-      }
-    } catch (e) {
-      console.error("MapLibre check failed:", e);
-    }
+    // WebGL support check removed due to minification issues. Modern browsers support WebGL.
   }, []);
 
   const onMapLoad = useCallback((e: any) => {
@@ -130,7 +123,7 @@ export const MapSection = () => {
           geometry: { type: "Point", coordinates: coords },
           properties: {
             id: d.dimension,
-            size: Math.max(8, Math.sqrt(d.impressions) * 2.5),
+            size: Math.max(6, Math.min(35, Math.sqrt(d.impressions) * 0.1)),
           },
         };
       })
@@ -138,16 +131,7 @@ export const MapSection = () => {
     return { type: "FeatureCollection", features };
   }, [countryData]);
 
-  if (!isSupported) {
-    return (
-      <MapCard>
-        <CardHeader><CardTitle>Global Distribution</CardTitle></CardHeader>
-        <CardBody padding="0">
-          <MapContainer><StatusOverlay error><span>⚠️</span> {error}</StatusOverlay></MapContainer>
-        </CardBody>
-      </MapCard>
-    );
-  }
+
 
   return (
     <MapCard>
@@ -167,7 +151,6 @@ export const MapSection = () => {
           )}
           <Map
             ref={mapRef}
-            mapLib={maplibregl}
             initialViewState={{ longitude: 10, latitude: 30, zoom: 1.5 }}
             mapStyle={mapStyle}
             onLoad={onMapLoad}

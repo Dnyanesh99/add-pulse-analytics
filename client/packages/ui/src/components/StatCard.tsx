@@ -14,10 +14,13 @@ const StatWrap = styled.div<{ delay: string }>`
   animation-delay: ${props => props.delay};
   position: relative;
   overflow: hidden;
-  transition: box-shadow 0.2s, border-color 0.2s;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   &:hover {
     box-shadow: ${props => props.theme.shadowMd};
     border-color: ${props => props.theme.borderHover};
+    transform: translateY(-4px);
   }
 `;
 

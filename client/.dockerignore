@@ -1,0 +1,12 @@
+node_modules
+dist
+.yarn/
+.yarn/cache
+.yarn/unplugged
+.yarn/install-state.gz
+.pnp.*
+.vscode
+cypress/screenshots
+cypress/videos
+.DS_Store
+*.log

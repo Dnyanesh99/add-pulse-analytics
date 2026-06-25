@@ -30,10 +30,20 @@ public class IngestionController {
   @PostMapping(value = "/track", consumes = "application/json")
   public ResponseEntity<Void> trackEvent(@RequestBody AdEvent payload) {
 
-    boolean isAuthorized = validator.processEventCost(payload.getCampaignId(), payload.getCost());
+    int authResult = validator.processEventCost(payload.getCampaignId(), payload.getCost());
 
-    if (!isAuthorized) {
-      // Campaign is paused or budget exhausted
+    if (authResult == -2) {
+      // Just exhausted the budget!
+      try {
+        String sysEvent = String.format("{\"eventType\": \"BUDGET_EXHAUSTED\", \"campaignId\": \"%s\"}", payload.getCampaignId());
+        kafkaTemplate.send("system-events", payload.getCampaignId(), sysEvent);
+        System.out.println("🚨 Budget Exhausted for Campaign: " + payload.getCampaignId());
+      } catch (Exception e) {
+        System.err.println("Failed to send system event: " + e.getMessage());
+      }
+      return ResponseEntity.unprocessableEntity().build();
+    } else if (authResult == -1) {
+      // Campaign is paused or already exhausted
       return ResponseEntity.unprocessableEntity().build();
     }
 

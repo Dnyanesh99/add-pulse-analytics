@@ -19,7 +19,10 @@ const TopBarWrapper = styled.header`
   top: 0;
   z-index: 100;
   box-shadow: ${(p) => p.theme.shadow};
-  transition: background 0.25s, border-color 0.25s;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: ${(p) => p.theme.surface};
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 `;
 
 const Logo = styled.div`
@@ -70,10 +73,19 @@ const LiveDot = styled.div`
   animation: ${pulse} 1.8s ease-in-out infinite;
 `;
 
+import { logout } from "../../store";
+import { useNavigate } from "react-router-dom";
+
 export const TopBar = () => {
   const dispatch = useAppDispatch();
   const themeMode = useAppSelector((s) => s.theme.mode);
   const metrics = useAppSelector((s) => s.metrics);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/login");
+  };
 
   return (
     <TopBarWrapper>
@@ -91,6 +103,9 @@ export const TopBar = () => {
           aria-label="Toggle theme"
         >
           {themeMode === "dark" ? "☀️" : "🌙"}
+        </IconButton>
+        <IconButton onClick={handleLogout} aria-label="Logout">
+          🚪
         </IconButton>
       </TopRight>
     </TopBarWrapper>

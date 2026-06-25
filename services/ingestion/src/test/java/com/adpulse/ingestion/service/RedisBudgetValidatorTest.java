@@ -26,9 +26,9 @@ class RedisBudgetValidatorTest {
     // Lua script returns 1 for authorized
     when(redisTemplate.execute(any(RedisScript.class), anyList(), any(), any())).thenReturn(1L);
 
-    boolean result = validator.processEventCost("camp-123", 1.50);
+    int result = validator.processEventCost("camp-123", 1.50);
 
-    assertTrue(result);
+    org.junit.jupiter.api.Assertions.assertEquals(1, result);
   }
 
   @Test
@@ -36,9 +36,9 @@ class RedisBudgetValidatorTest {
     // Lua script returns -1 for not active
     when(redisTemplate.execute(any(RedisScript.class), anyList(), any(), any())).thenReturn(-1L);
 
-    boolean result = validator.processEventCost("camp-123", 1.50);
+    int result = validator.processEventCost("camp-123", 1.50);
 
-    assertFalse(result);
+    org.junit.jupiter.api.Assertions.assertEquals(-1, result);
   }
 
   @Test
@@ -46,17 +46,17 @@ class RedisBudgetValidatorTest {
     // Lua script returns -2 for exhausted
     when(redisTemplate.execute(any(RedisScript.class), anyList(), any(), any())).thenReturn(-2L);
 
-    boolean result = validator.processEventCost("camp-123", 1.50);
+    int result = validator.processEventCost("camp-123", 1.50);
 
-    assertFalse(result);
+    org.junit.jupiter.api.Assertions.assertEquals(-2, result);
   }
 
   @Test
   void processEventCost_NullResult() {
     when(redisTemplate.execute(any(RedisScript.class), anyList(), any(), any())).thenReturn(null);
 
-    boolean result = validator.processEventCost("camp-123", 1.50);
+    int result = validator.processEventCost("camp-123", 1.50);
 
-    assertFalse(result);
+    org.junit.jupiter.api.Assertions.assertEquals(-1, result);
   }
 }

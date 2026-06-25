@@ -7,13 +7,16 @@ export const Card = styled.div<{ hoverable?: boolean; theme?: UiTheme }>`
   border: 1px solid ${props => props.theme?.border};
   border-radius: 14px;
   box-shadow: ${props => props.theme?.shadow};
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   overflow: hidden;
-  transition: box-shadow 0.2s, border-color 0.2s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   ${props => props.hoverable && css`
     cursor: pointer;
     &:hover {
       border-color: ${props.theme?.borderHover};
       box-shadow: ${props.theme?.shadowMd};
+      transform: translateY(-4px);
     }
   `}
 `;

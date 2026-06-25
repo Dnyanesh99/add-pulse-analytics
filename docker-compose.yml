@@ -143,7 +143,7 @@ services:
         condition: service_healthy
     entrypoint: ["/bin/bash", "-c"]
     command: >
-      "/opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:29092 --create --if-not-exists --topic ad-events --partitions 6 --replication-factor 1 && echo 'Topic ad-events ready.'"
+      "/opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:29092 --create --if-not-exists --topic ad-events --partitions 6 --replication-factor 1 && /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:29092 --create --if-not-exists --topic system-events --partitions 3 --replication-factor 1 && echo 'Topics ready.'"
     restart: "no"
 
   # ---------------------------------------------------------------------------
@@ -158,6 +158,7 @@ services:
       - "127.0.0.1:9000:9000"
     environment:
       CLICKHOUSE_DB:       ${CLICKHOUSE_DB}
+      CLICKHOUSE_USER:     ${CLICKHOUSE_USER}
       CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD}
     volumes:
       - ./infra/clickhouse/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
@@ -225,7 +226,7 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: docker
       SERVER_PORT: 8081
-      CLICKHOUSE_URL: jdbc:ch://clickhouse:8123/${CLICKHOUSE_DB}?compress=0
+      CLICKHOUSE_URL: jdbc:clickhouse://clickhouse:8123/${CLICKHOUSE_DB}?compress=0
       CLICKHOUSE_USER: ${CLICKHOUSE_USER:-default}
       CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-}
       POSTGRES_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
@@ -234,6 +235,7 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
       SPRING_DATA_REDIS_PASSWORD: ${REDIS_PASSWORD}
+      KAFKA_URL: kafka:29092
     depends_on:
       clickhouse:
         condition: service_healthy
@@ -250,6 +252,7 @@ services:
     <<: [*restart, *logging]
     environment:
       INGESTION_URL: http://adpulse-ingestion:8082/api/v1/events/track
+      ANALYTICS_URL: http://adpulse-analytics:8081/api/v1/campaigns
       SIMULATOR_WORKERS: 10
       SIMULATOR_BATCH_DELAY_MS: 100
     depends_on:
@@ -277,21 +280,7 @@ services:
     depends_on:
       - analytics-api
 
-  # ---------------------------------------------------------------------------
-  # Automated E2E Testing (Cypress)
-  # ---------------------------------------------------------------------------
-  cypress:
-    image: cypress/included:15.17.0
-    container_name: adpulse-cypress
-    depends_on:
-      frontend:
-        condition: service_healthy
-    environment:
-      - CYPRESS_baseUrl=http://frontend:80
-    volumes:
-      - ./client:/app
-    working_dir: /app
-    restart: "no"
+
 
 volumes:
   pg_data:

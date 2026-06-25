@@ -51,7 +51,7 @@ public class RedisBudgetValidator {
    * Executes an atomic check and increment entirely within Redis memory using Lua. Prevents race
    * conditions and overspending at high scale.
    */
-  public boolean processEventCost(String campaignId, double eventCost) {
+  public int processEventCost(String campaignId, double eventCost) {
     String budgetKey = "campaign:budget:" + campaignId;
 
     Long result =
@@ -61,6 +61,6 @@ public class RedisBudgetValidator {
             String.valueOf(eventCost),
             campaignId);
 
-    return result != null && result == 1;
+    return result != null ? result.intValue() : -1;
   }
 }

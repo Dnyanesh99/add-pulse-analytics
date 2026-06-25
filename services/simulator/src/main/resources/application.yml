@@ -9,6 +9,7 @@ spring:
 
 simulator:
   ingestion-url: ${INGESTION_URL:http://localhost:8080/api/v1/events/track}
+  analytics-url: ${ANALYTICS_URL:http://localhost:8081/api/v1/campaigns}
   workers: 500 # Number of concurrent virtual threads blasting the server
   batch-delay-ms: 0 # Delay between blasts to prevent local network socket exhaustion
 

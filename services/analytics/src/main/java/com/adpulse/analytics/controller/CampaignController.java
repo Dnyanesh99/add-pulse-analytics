@@ -26,11 +26,13 @@ public class CampaignController {
     return campaignService.getAllCampaignsWithMetrics();
   }
 
+  @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
   @PostMapping
   public Campaign create(@RequestBody Campaign campaign) {
     return campaignService.createCampaign(campaign);
   }
 
+  @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
   @PutMapping("/{id}")
   public Campaign update(@PathVariable UUID id, @RequestBody Campaign campaign) {
     return campaignService.updateCampaign(id, campaign);

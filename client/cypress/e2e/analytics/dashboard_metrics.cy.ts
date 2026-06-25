@@ -1,6 +1,10 @@
 describe("Real-time Analytics", () => {
   beforeEach(() => {
-    cy.visit("/");
+    cy.visit("/login");
+    cy.get('input[type="text"]').type("admin");
+    cy.get('input[type="password"]').type("admin123");
+    cy.get('button[type="submit"]').click();
+    cy.url().should("include", "/campaigns");
   });
 
   it("should display live global metrics in the top bar", () => {
