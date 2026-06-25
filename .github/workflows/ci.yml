@@ -72,6 +72,7 @@ jobs:
         run: |
           corepack enable
           yarn install --immutable
+          yarn cypress install
 
       - name: Start Docker Environment
         run: |

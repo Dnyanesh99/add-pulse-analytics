@@ -17,9 +17,11 @@ import org.springframework.data.redis.core.script.RedisScript;
 @ExtendWith(MockitoExtension.class)
 class RedisBudgetValidatorTest {
 
-  @Mock private StringRedisTemplate redisTemplate;
+  @Mock
+  private StringRedisTemplate redisTemplate;
 
-  @InjectMocks private RedisBudgetValidator validator;
+  @InjectMocks
+  private RedisBudgetValidator validator;
 
   @Test
   void processEventCost_Authorized() {
