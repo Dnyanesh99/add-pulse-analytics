@@ -10,7 +10,7 @@ import { Card, CardBody, CardHeader, CardTitle, Badge } from "@adpulse/ui";
 const MAP_STYLE_URL = "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json";
 
 // Robust Fallback: Using a static object to avoid any potential scope issues
-const FALLBACK_STYLE: any = {
+const FALLBACK_STYLE: Record<string, unknown> = {
   "version": 8,
   "sources": {},
   "layers": [
@@ -83,14 +83,14 @@ export const MapSection = () => {
   const mapRef = useRef<MapRef>(null);
   const { data: countryData = [], isFetching } = useGetBreakdownQuery("country");
   const [error, setError] = useState<string | null>(null);
-  const [mapStyle, setMapStyle] = useState<any>(MAP_STYLE_URL);
+  const [mapStyle, setMapStyle] = useState<string | Record<string, unknown>>(MAP_STYLE_URL);
 
 
   useEffect(() => {
     // WebGL support check removed due to minification issues. Modern browsers support WebGL.
   }, []);
 
-  const onMapLoad = useCallback((e: any) => {
+  const onMapLoad = useCallback((e: { target: { getCanvas: () => HTMLCanvasElement } }) => {
     const map = e.target;
     const canvas = map.getCanvas();
     canvas.addEventListener("webglcontextlost", (ev: Event) => {
@@ -100,8 +100,8 @@ export const MapSection = () => {
     });
   }, []);
 
-  const handleMapError = useCallback((e: any) => {
-    const err = e.error || e;
+  const handleMapError = useCallback((e: { error?: { message?: string } } | Error | string | unknown) => {
+    const err = (e as { error?: { message?: string } })?.error || e;
     console.error("Map Engine Error Detail:", err);
     
     // Fallback logic if tiles or style fails
@@ -115,7 +115,7 @@ export const MapSection = () => {
 
   const geoJsonData = useMemo(() => {
     const features = countryData
-      .map((d: any) => {
+      .map((d: { dimension: string; impressions: number }) => {
         const coords = COUNTRY_COORDS[d.dimension];
         if (!coords) return null;
         return {
@@ -159,7 +159,7 @@ export const MapSection = () => {
             attributionControl={false}
           >
             <NavigationControl position="top-right" showCompass={false} />
-            <Source id="traffic-data" type="geojson" data={geoJsonData as any}>
+            <Source id="traffic-data" type="geojson" data={geoJsonData as import("geojson").FeatureCollection}>
               <Layer
                 id="point"
                 type="circle"

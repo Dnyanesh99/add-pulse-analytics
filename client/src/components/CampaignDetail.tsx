@@ -213,7 +213,7 @@ export const CampaignDetail = () => {
   const theme = useTheme();
   const { id: selectedId } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const role = useAppSelector((s) => (s as any).auth?.role);
+  const role = useAppSelector((s) => (s as { auth?: { role?: string } }).auth?.role);
   
   // RTK Query Hooks
   const { data: allCampaigns = [] } = useGetCampaignsQuery();

@@ -129,7 +129,7 @@ export const Login = () => {
       dispatch(setCredentials(data));
       navigate('/campaigns');
       toast.success('Logged in successfully!');
-    } catch (err) {
+    } catch {
       toast.error('Invalid username or password');
     }
   };
